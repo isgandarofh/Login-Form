@@ -6,10 +6,13 @@ import TextInput from './UI/TextInput';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import type { User, RegisterFormType } from '../types/type';
+import { useState } from 'react';
 
 
 export default function RegisterForm() {
     const navigate = useNavigate()
+    const [loading, setLoading] = useState<boolean>(false)
+
     const formik = useFormik<RegisterFormType>({
         initialValues: {
             email: '',
@@ -19,7 +22,7 @@ export default function RegisterForm() {
         validationSchema: registerSchema,
         onSubmit: async ({ email, password }) => {
             try {
-
+                setLoading(true)
                 const user: User = {
                     email,
                     password,
@@ -27,6 +30,8 @@ export default function RegisterForm() {
                 }
                 const result = await register(user)
                 if (result.data.idToken) {
+                    setLoading(false)
+                    navigate("/login")
                     toast.success("Qeydiyyat ugurlu oldu", {
                         position: "top-right",
                         autoClose: 2000,
@@ -40,9 +45,7 @@ export default function RegisterForm() {
                     formik.resetForm();
 
 
-                    setTimeout(() => {
-                        navigate("/login")
-                    }, 2500)
+                    
                 }
             } catch (error) {
                 toast.error("Xeta bas verdi.", {
@@ -87,7 +90,7 @@ export default function RegisterForm() {
             }
 
             <div className="d-grid mb-3">
-                <Button type='submit' btn_text={"Create account"} />
+                <Button loading={loading} type='submit' btn_text={"Create account"} />
             </div>
         </form>
     )

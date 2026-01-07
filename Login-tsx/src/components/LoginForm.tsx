@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import type { User, FormType } from '../types/type';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../store/slices/auth';
+import { useState } from 'react';
 
 
 
@@ -19,6 +20,8 @@ export default function LoginForm() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  const [loading,setLoading]=useState<boolean>(false)
+
   const formik = useFormik<FormType>({
     initialValues: {
       email: "",
@@ -27,6 +30,7 @@ export default function LoginForm() {
     validationSchema: loginSchema,
     onSubmit: async ({ email, password }) => {
       try {
+        setLoading(true)      
         const user: User = {
           email,
           password,
@@ -34,9 +38,11 @@ export default function LoginForm() {
         }
         const result = await login(user);
         if (result.data.idToken) {
+          setLoading(false)
+          
           toast.success("Hesaba daxil oldunuz", {
-            position: "top-right",
-            autoClose: 2000,
+            position: "top-center",
+            autoClose: 1800,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -46,11 +52,9 @@ export default function LoginForm() {
           })
 
           dispatch(setToken(result.data.idToken))
+          navigate("/")
           formik.resetForm();
 
-          setTimeout(() => {
-            navigate("/")
-          }, 500)
         }
       } catch (err) {
         toast.error("Xeta bas verdi.", {
@@ -86,7 +90,7 @@ export default function LoginForm() {
       }
 
       <div className="d-grid mb-3">
-        <Button type="submit" btn_text="Login" />
+        <Button loading ={loading} type="submit" btn_text="Login" />
       </div>
 
       <div className="d-flex align-items-center justify-content-between flex-wrap">
