@@ -8,12 +8,16 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import type { User, FormType } from '../types/type';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../store/slices/auth';
+
 
 
 
 
 export default function LoginForm() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const formik = useFormik<FormType>({
     initialValues: {
@@ -41,7 +45,7 @@ export default function LoginForm() {
             theme: "light",
           })
 
-          Cookies.set("idToken", JSON.stringify(result.data.idToken));
+          dispatch(setToken(result.data.idToken))
           formik.resetForm();
 
           setTimeout(() => {

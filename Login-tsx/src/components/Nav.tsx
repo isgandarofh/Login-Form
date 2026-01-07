@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { removeToken } from "../store/slices/auth";
 
 
 
@@ -7,9 +8,10 @@ import Cookies from "js-cookie";
 export default function Nav() {
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleLogout = () => {
-        Cookies.remove("idToken");
+        dispatch(removeToken())
         navigate("/login", {replace : true});
     };
     return (
